@@ -80,3 +80,14 @@ def import_csv():
 def view_records():
     records = StrokeRecord.query.limit(20).all()
     return render_template("records.html", records=records)
+
+
+
+@bp.route("/create_admin")
+def create_admin():
+    from .models import User
+    from app import db
+    user = User(username="admin", password="admin123")
+    db.session.add(user)
+    db.session.commit()
+    return "Admin user created!"

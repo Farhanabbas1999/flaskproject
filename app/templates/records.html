@@ -1,0 +1,27 @@
+<h2>Stroke Records (First 20 Rows)</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Gender</th>
+        <th>Age</th>
+        <th>Hypertension</th>
+        <th>Heart Disease</th>
+        <th>Glucose</th>
+        <th>BMI</th>
+        <th>Stroke</th>
+    </tr>
+
+    {% for r in records %}
+    <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.gender }}</td>
+        <td>{{ r.age }}</td>
+        <td>{{ r.hypertension }}</td>
+        <td>{{ r.heart_disease }}</td>
+        <td>{{ r.avg_glucose_level }}</td>
+        <td>{{ r.bmi }}</td>
+        <td>{{ r.stroke }}</td>
+    </tr>
+    {% endfor %}
+</table>

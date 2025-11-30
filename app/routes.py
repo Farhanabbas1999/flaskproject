@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import User, db
 
-bp = Blueprint("main", _name_)
+bp = Blueprint("main", __name__)
 
 @bp.route("/")
 def home():
@@ -46,3 +46,37 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("main.login"))
+
+
+import pandas as pd
+from .models import StrokeRecord, db
+from flask_login import login_required
+
+@bp.route("/import_csv")
+@login_required
+def import_csv():
+    df = pd.read_csv("healthcare-dataset-stroke-data.csv")
+
+    for _, row in df.iterrows():
+        record = StrokeRecord(
+            gender=row["gender"],
+            age=row["age"],
+            hypertension=row["hypertension"],
+            heart_disease=row["heart_disease"],
+            ever_married=row["ever_married"],
+            work_type=row["work_type"],
+            Residence_type=row["Residence_type"],
+            avg_glucose_level=row["avg_glucose_level"],
+            bmi=row["bmi"],
+            smoking_status=row["smoking_status"],
+            stroke=row["stroke"]
+        )
+        db.session.add(record)
+
+    db.session.commit()
+    return "CSV imported successfully!"
+@bp.route("/records")
+@login_required
+def view_records():
+    records = StrokeRecord.query.limit(20).all()
+    return render_template("records.html", records=records)

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import User, db
 
-bp = Blueprint("main", _name_)
+bp = Blueprint("main", __name__)
 
 @bp.route("/")
 def home():

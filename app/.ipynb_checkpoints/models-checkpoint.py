@@ -14,3 +14,17 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class StrokeRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    gender = db.Column(db.String(20))
+    age = db.Column(db.Float)
+    hypertension = db.Column(db.Integer)
+    heart_disease = db.Column(db.Integer)
+    ever_married = db.Column(db.String(10))
+    work_type = db.Column(db.String(50))
+    Residence_type = db.Column(db.String(50))
+    avg_glucose_level = db.Column(db.Float)
+    bmi = db.Column(db.Float)
+    smoking_status = db.Column(db.String(20))
+    stroke = db.Column(db.Integer)

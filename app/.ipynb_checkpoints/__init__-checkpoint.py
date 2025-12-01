@@ -1,44 +1,43 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_wtf import CSRFProtect
+from .extensions import db, login_manager, mongo
+from .models import User
 
-db = SQLAlchemy()
-login_manager = LoginManager()
-login_manager.login_view = "main.login"
-csrf = CSRFProtect()
+
 
 def create_app():
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'mysecretkey123'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
-    # Application Config
-    app.config["SECRET_KEY"] = "mysecretkey123"
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///site.db"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # MONGO DB
+    app.config["MONGO_URI"] = "mongodb://localhost:27017/hospital_db"
 
-    # Initialize Extensions
-    csrf.init_app(app)
+    # INIT EXTENSIONS
     db.init_app(app)
     login_manager.init_app(app)
+    mongo.init_app(app)
 
-    from .models import User
-
+    # LOGIN MANAGER
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    # BLUEPRINT REGISTRATION (ADDS URL PREFIXES)
+    from .auth.routes import auth_bp
+    from .patient.routes import patient_bp
+    from .doctor.routes import doctor_bp
+    from .nurse.routes import nurse_bp
+    from .admin.routes import admin_bp
+    from .main.routes import main_bp
 
-    from flask_wtf.csrf import generate_csrf
-    
-    @app.context_processor
-    def inject_csrf_token():
-        return dict(csrf_token=generate_csrf)
-    
-    # Register Blueprint
-    from .routes import bp
-    app.register_blueprint(bp)
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(patient_bp, url_prefix="/patient")
+    app.register_blueprint(doctor_bp, url_prefix="/doctor")
+    app.register_blueprint(nurse_bp, url_prefix="/nurse")
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(main_bp)
 
-    # Create DB tables
+    # CREATE SQLITE TABLES
     with app.app_context():
         db.create_all()
 
